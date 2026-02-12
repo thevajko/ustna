@@ -2,17 +2,20 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8" />
-    <title>Náhodná otázka</title>
+    <title>Generátor otázok pre skúšku z VAII</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="container">
-        <div id="question">Načítavam otázky...</div>
+        <div id="question" class="intro-visible">
+            Klikni sem, alebo stlač medzerník / Enter pre zobrazenie prvej otázky.
+        </div>
     </div>
 
-    <button id="nextBtn">Ďalšia otázka</button>
+    <button id="nextBtn" class="hidden">Ďalšia otázka</button>
 
-    <div id="bgToggleContainer">
+    <div id="bgToggleContainer" class="hidden">
         <label>
             <input type="checkbox" id="toggleBgCheckbox">
             Skryť pohyblivé pozadie

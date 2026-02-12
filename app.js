@@ -3,8 +3,11 @@ const nextBtn = document.getElementById('nextBtn');
 const toggleBgCheckbox = document.getElementById('toggleBgCheckbox');
 
 let questions = [];
-let lastQuestionIndex = -1; // nový stav: posledná zobrazená otázka
-let isAnimatingQuestion = false; // zamedzí spúšťaniu animácie počas prebiehajúcej
+let lastQuestionIndex = -1;
+let isAnimatingQuestion = false;
+
+// nový stav: či je UI ešte v úvodnom režime (žiadna otázka nebola vybratá)
+let isInitialScreen = true;
 
 // --- náhodný background obrázok + pomalý, plynulo sa meniaci smer pohybu ---
 const backgroundImages = [
@@ -121,7 +124,7 @@ fetch('questions.json')
     })
     .then(data => {
         questions = data;
-        showRandomQuestion(true); // prvé zobrazenie bez animácie (voliteľné)
+        // žiadna otázka sa teraz ešte nezobrazí – čakáme na interakciu používateľa
     })
     .catch(err => {
         questionElement.textContent = 'Chyba pri načítaní otázok: ' + err.message;
@@ -193,6 +196,38 @@ function showRandomQuestion(skipAnimation = false) {
     questionElement.addEventListener('animationend', onFadeOutEnd);
 }
 
+// funkcia, ktorá z úvodnej obrazovky prejde na „normálny“ režim
+function startAppIfNeeded() {
+    if (!isInitialScreen || !questions || questions.length === 0) return;
+
+    isInitialScreen = false;
+
+    // skry úvodný text s animáciou, potom zobraz prvú otázku + UI
+    questionElement.classList.remove('intro-visible');
+    questionElement.classList.add('intro-hide');
+
+    const onIntroHideEnd = (e) => {
+        if (e.target !== questionElement) return;
+        questionElement.removeEventListener('animationend', onIntroHideEnd);
+
+        questionElement.classList.remove('intro-hide');
+
+        // zobraziť tlačidlo a spodný blok (môžeš pridať aj CSS pre jemný fade-in, ak chceš)
+        nextBtn.classList.remove('hidden');
+        document.getElementById('bgToggleContainer').classList.remove('hidden');
+
+        // po prvom spustení zobraz otázku bez fade-out starej (lebo tam bol len info text)
+        showRandomQuestion(true);
+    };
+
+    questionElement.addEventListener('animationend', onIntroHideEnd);
+}
+
+// Klik na otázku v úvodnom režime
+questionElement.addEventListener('click', () => {
+    startAppIfNeeded();
+});
+
 // Klik na tlačidlo -> ďalšia otázka
 nextBtn.addEventListener('click', () => showRandomQuestion(false));
 
@@ -200,6 +235,10 @@ nextBtn.addEventListener('click', () => showRandomQuestion(false));
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault();
+        if (isInitialScreen) {
+            startAppIfNeeded();
+            return;
+        }
         if (!nextBtn.disabled) {
             showRandomQuestion(false);
         }
