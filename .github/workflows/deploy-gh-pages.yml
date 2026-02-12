@@ -1,0 +1,42 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node (optional, but common for web projects)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build static site folder
+        run: |
+          mkdir -p dist
+          cp index.html dist/
+          cp app.js dist/
+          cp styles.css dist/
+          cp questions.json dist/
+          if [ -d "imgs" ]; then
+            cp -r imgs dist/
+          fi
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: dist
+          force_orphan: true
+
