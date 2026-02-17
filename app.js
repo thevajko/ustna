@@ -15,6 +15,11 @@ const backgroundImages = [
     'imgs/bg02.png',
     'imgs/bg03.png',
     'imgs/bg04.png',
+    'imgs/bg05.png',
+    'imgs/bg06.jpg',
+    'imgs/bg07.jpg',
+    'imgs/bg08.jpg',
+    'imgs/bg09.jpg',
     // ...pridaj ďalšie, ak potrebuješ...
 ];
 
